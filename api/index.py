@@ -81,6 +81,8 @@ model, loaded_path, load_error = load_spam_model()
 # APPLICATION ROUTES
 # -----------------------------------------------------------------------------
 @app.route("/", methods=["GET"])
+@app.route("/api", methods=["GET"])
+@app.route("/api/index", methods=["GET"])
 def index():
     """Serves the main SpamShield AI cybersecurity dashboard."""
     return render_template(
@@ -91,6 +93,7 @@ def index():
 
 
 @app.route("/predict", methods=["POST"])
+@app.route("/api/predict", methods=["POST"])
 def predict():
     """
     Evaluates incoming SMS text payload using TF-IDF + LinearSVC pipeline.
@@ -135,6 +138,7 @@ def predict():
         }), 500
 
 
+@app.route("/health", methods=["GET"])
 @app.route("/api/health", methods=["GET"])
 def health():
     """Health check endpoint for deployment monitoring."""

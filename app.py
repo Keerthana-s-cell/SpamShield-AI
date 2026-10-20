@@ -32,4 +32,4 @@ if __name__ == "__main__":
     if loaded_path:
         print(f"[*] Model path:   {loaded_path}")
     print("=" * 70)
-    app.run(host="127.0.0.1", port=port, debug=True)
+    app.run(host="0.0.0.0", port=port, debug=False)
