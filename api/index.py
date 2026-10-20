@@ -46,6 +46,21 @@ app = Flask(
     static_url_path="/static"
 )
 
+# Custom WSGI middleware to restore original request path from Vercel proxy headers
+class VercelPathMiddleware:
+    def __init__(self, wsgi_app):
+        self.wsgi_app = wsgi_app
+
+    def __call__(self, environ, start_response):
+        matched = environ.get("HTTP_X_MATCHED_PATH")
+        if matched:
+            # Strip query strings if present in matched path
+            clean_path = matched.split("?")[0]
+            environ["PATH_INFO"] = clean_path
+        return self.wsgi_app(environ, start_response)
+
+app.wsgi_app = VercelPathMiddleware(app.wsgi_app)
+
 # -----------------------------------------------------------------------------
 # MODEL LOADER
 # -----------------------------------------------------------------------------
@@ -82,9 +97,11 @@ model, loaded_path, load_error = load_spam_model()
 # -----------------------------------------------------------------------------
 @app.route("/", methods=["GET"])
 @app.route("/api", methods=["GET"])
-@app.route("/api/index", methods=["GET"])
+@app.route("/api/index", methods=["GET", "POST"])
 def index():
     """Serves the main SpamShield AI cybersecurity dashboard."""
+    if request.method == "POST":
+        return predict()
     return render_template(
         "index.html",
         model_loaded=(model is not None),
