@@ -1,3 +1,4 @@
+
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
@@ -8,12 +9,7 @@
   ],
   "functions": {
     "api/index.py": {
-      "includeFiles": [
-        "spam_model.pkl",
-        "api/spam_model.pkl",
-        "templates/**",
-        "static/**"
-      ],
+      "includeFiles": "{spam_model.pkl,api/spam_model.pkl,templates/**,static/**}",
       "maxDuration": 30
     }
   }
