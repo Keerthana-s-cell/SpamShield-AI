@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpamShield AI — Smart Messages. Safer Digital Life.</title>
+    <meta name="description" content="AI-Powered SMS Spam & Smishing Detection System built with Python, Scikit-learn, and Flask.">
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- 1. HEADER SECTION -->
+        <header class="header-box">
+            <div class="cyber-badge">
+                <span>🛡️ AI-POWERED SMS PROTECTION</span>
+            </div>
+            <h1 class="main-title">SpamShield AI</h1>
+            <div class="sub-title">Smart Messages. Safer Digital Life.</div>
+            <p class="intro-text">
+                Every day, millions of deceptive SMS messages (smishing, urgent lottery scams, and fraudulent bank alerts)
+                are transmitted to exploit digital users. <strong>SpamShield AI</strong> utilizes machine learning powered by
+                <strong>TF-IDF Vectorization</strong> and <strong>Linear Support Vector Classification (LinearSVC)</strong>
+                to inspect message semantics in real time and evaluate whether incoming texts exhibit patterns typical of spam.
+            </p>
+        </header>
+
+        <!-- 2. SESSION TELEMETRY DASHBOARD -->
+        <section class="cyber-card">
+            <div class="telemetry-title">
+                <span>📊 Session Threat Telemetry</span>
+            </div>
+            <div class="telemetry-grid">
+                <div class="stat-card">
+                    <div class="stat-lbl">Total Scanned</div>
+                    <div class="stat-val" id="statTotal">0</div>
+                    <div class="stat-sub">Current Active Session</div>
+                </div>
+                <div class="stat-card spam-stat">
+                    <div class="stat-lbl">Spam Detected</div>
+                    <div class="stat-val" id="statSpam" style="color: #f87171;">0</div>
+                    <div class="stat-sub">Flagged Messages</div>
+                </div>
+                <div class="stat-card ham-stat">
+                    <div class="stat-lbl">Legitimate Messages</div>
+                    <div class="stat-val" id="statHam" style="color: #34d399;">0</div>
+                    <div class="stat-sub">Verified Clean</div>
+                </div>
+                <div class="stat-card ratio-stat">
+                    <div class="stat-lbl">Spam Ratio</div>
+                    <div class="stat-val" id="statRatio" style="color: #c084fc;">0.0%</div>
+                    <div class="stat-sub">Threat Incidence</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. SMS THREAT SCANNER -->
+        <section class="cyber-card">
+            <div class="scanner-title">
+                <span>🔍 SMS Threat Scanner</span>
+            </div>
+
+            <!-- Pre-loaded Sample Payloads -->
+            <div class="samples-wrapper">
+                <div class="samples-lbl"><strong>Try a sample message:</strong></div>
+                <div class="samples-grid">
+                    <button type="button" class="sample-btn" id="sampleLegitBtn">
+                        <span>💬</span> <span>Sample: Legitimate Message</span>
+                    </button>
+                    <button type="button" class="sample-btn" id="samplePromoBtn">
+                        <span>🏷️</span> <span>Sample: Promotional Spam</span>
+                    </button>
+                    <button type="button" class="sample-btn" id="samplePrizeBtn">
+                        <span>🎁</span> <span>Sample: Suspicious Prize Scam</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Input Textarea -->
+            <div class="textarea-wrapper">
+                <textarea id="smsInput" class="cyber-textarea" placeholder="Paste your SMS message here..."></textarea>
+            </div>
+
+            <!-- Live Counter & Reset Controls -->
+            <div class="counter-bar">
+                <div class="counter-tag">
+                    Characters: <strong id="charCount">0</strong> | Words: <strong id="wordCount">0</strong>
+                </div>
+                <button type="button" class="reset-stats-btn" id="resetStatsBtn" title="Reset telemetry session counters">
+                    🔄 Reset Session Stats
+                </button>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-grid">
+                <button type="button" class="btn-primary" id="scanBtn">
+                    <span>⚡ SCAN MESSAGE FOR THREATS</span>
+                </button>
+                <button type="button" class="btn-ghost" id="clearBtn">
+                    <span>🧹 Clear Input</span>
+                </button>
+            </div>
+
+            <!-- Alert Notification for Empty Input -->
+            <div id="alertBox" class="alert-box alert-warning" style="display: none;"></div>
+
+            <!-- 4. PREDICTION RESULTS DISPLAY -->
+            <div id="resultsContainer" class="results-container">
+                
+                <!-- SPAM WARNING CARD -->
+                <div id="spamResultCard" class="result-card-spam" style="display: none;">
+                    <div class="result-badge-spam">⚠️ ALERT: THREAT IDENTIFIED</div>
+                    <div class="result-title-spam">🚨 SPAM DETECTED</div>
+                    <p style="color:#fecaca; font-size:0.95rem; margin-bottom:12px;">
+                        The classification engine has evaluated this SMS and determined that it may be 
+                        <strong>unwanted, predatory, promotional spam, or a fraudulent phishing attempt (smishing)</strong>.
+                    </p>
+                    <div style="font-size:0.82rem; color:#94a3b8; margin-top:8px;">
+                        <strong>Analyzed Text:</strong>
+                    </div>
+                    <div class="msg-preview-box" id="spamAnalyzedText"></div>
+                    <div style="font-size:0.84rem; color:#fca5a5; margin-top:10px;">
+                        <strong>🛡️ Recommended Safety Actions:</strong>
+                        <ul style="margin: 6px 0 0 18px; padding:0; line-height:1.5;">
+                            <li><strong>Do not click</strong> any hyperlinks, shortened URLs, or download attachments.</li>
+                            <li><strong>Never share</strong> personal identification numbers, passwords, OTPs, or financial information.</li>
+                            <li><strong>Report and block</strong> the sender number on your mobile carrier or device settings.</li>
+                        </ul>
+                    </div>
+                    <div class="security-notice">
+                        <strong>Safety Disclaimer:</strong> Machine learning classifications represent statistical assessments 
+                        derived from message text features. This model never claims a message is guaranteed fraudulent; 
+                        always exercise personal discretion when handling unexpected communications.
+                    </div>
+                </div>
+
+                <!-- HAM SUCCESS CARD -->
+                <div id="hamResultCard" class="result-card-ham" style="display: none;">
+                    <div class="result-badge-ham">✅ VERIFIED: STANDARD PATTERNS</div>
+                    <div class="result-title-ham">🛡️ MESSAGE APPEARS LEGITIMATE</div>
+                    <p style="color:#a7f3d0; font-size:0.95rem; margin-bottom:12px;">
+                        The classification model did not identify characteristics typical of spam or smishing in this text. 
+                        Its vocabulary and structure align with standard interpersonal communication.
+                    </p>
+                    <div style="font-size:0.82rem; color:#94a3b8; margin-top:8px;">
+                        <strong>Analyzed Text:</strong>
+                    </div>
+                    <div class="msg-preview-box" id="hamAnalyzedText"></div>
+                    <div style="font-size:0.84rem; color:#6ee7b7; margin-top:10px;">
+                        <strong>💡 Good Cybersecurity Practices:</strong>
+                        <ul style="margin: 6px 0 0 18px; padding:0; line-height:1.5;">
+                            <li>Even legitimate-looking messages from unknown numbers should be verified through official channels.</li>
+                            <li>Be cautious if an acquaintance asks for urgent financial transfers or gift cards unexpectedly.</li>
+                        </ul>
+                    </div>
+                    <div class="security-notice">
+                        <strong>Safety Disclaimer:</strong> The absence of detected spam signals does not guarantee absolute safety. 
+                        Sophisticated spear-phishing or novel impersonation tactics may mimic legitimate conversations. 
+                        Never claim any message is unconditionally safe without independent sender verification.
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 5. SMALL, COLLAPSIBLE "HOW SPAMSHIELD AI WORKS" SECTION -->
+        <details class="cyber-expander">
+            <summary>
+                <span>ℹ️ How SpamShield AI Works</span>
+            </summary>
+            <div class="expander-body">
+                <div class="arch-grid">
+                    <div class="arch-col">
+                        <div class="arch-col-title">1. Dataset</div>
+                        <div class="arch-col-desc">Trained using 5,572 SMS messages labeled as spam or legitimate.</div>
+                    </div>
+                    <div class="arch-col">
+                        <div class="arch-col-title">2. Text Processing</div>
+                        <div class="arch-col-desc">TF-IDF converts SMS text into numerical features.</div>
+                    </div>
+                    <div class="arch-col">
+                        <div class="arch-col-title">3. Classification</div>
+                        <div class="arch-col-desc">LinearSVC classifies the message as spam or legitimate.</div>
+                    </div>
+                </div>
+
+                <div style="font-size: 0.9rem; font-weight: 700; color: #e2e8f0; margin-top: 14px;">
+                    🎯 Evaluation Metrics on Test Split
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-chip">
+                        <div class="metric-chip-num">98.48%</div>
+                        <div class="metric-chip-name">Test Accuracy</div>
+                    </div>
+                    <div class="metric-chip">
+                        <div class="metric-chip-num">98.53%</div>
+                        <div class="metric-chip-name">Spam Precision</div>
+                    </div>
+                    <div class="metric-chip">
+                        <div class="metric-chip-num">89.93%</div>
+                        <div class="metric-chip-name">Spam Recall</div>
+                    </div>
+                    <div class="metric-chip">
+                        <div class="metric-chip-num">94.04%</div>
+                        <div class="metric-chip-name">Spam F1-Score</div>
+                    </div>
+                </div>
+                <div class="metrics-caption">
+                    ⚠️ <strong>Note:</strong> These metrics were achieved on the benchmark SMS Spam test split. Performance on real-world networks may vary depending on zero-day phrasing, obfuscation, and evolving smishing strategies.
+                </div>
+            </div>
+        </details>
+
+        <!-- 6. FOOTER SECTION -->
+        <footer class="footer-container">
+            <div><strong>SpamShield AI — Smart Messages. Safer Digital Life.</strong></div>
+            <div style="margin-top:6px;">Built with Python, Scikit-learn and Flask</div>
+            <div style="margin-top:4px; font-size:0.75rem; color:#475569;">
+                Academic Machine Learning Showcase &bull; Cybersecurity &bull; NLP Pipeline
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Client Script -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

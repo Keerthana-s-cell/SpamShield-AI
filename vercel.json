@@ -1,0 +1,20 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/index"
+    }
+  ],
+  "functions": {
+    "api/index.py": {
+      "includeFiles": [
+        "spam_model.pkl",
+        "api/spam_model.pkl",
+        "templates/**",
+        "static/**"
+      ],
+      "maxDuration": 30
+    }
+  }
+}
